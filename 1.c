@@ -1,80 +1,67 @@
-/*
-    프로그램 내용: 프로그램2.7에 함수 추가
-    작성자: 202010779 송석한
-    작성일: 24.03.30
-*/
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#define MAX_DEGREE 101
+#include <stdlib.h>
+#define MAX_STACK_SIZE 100
+typedef char Element;
 
-typedef struct{
-    int degree;
-    float coef[MAX_DEGREE];
-} Polynomial;
+Element data[MAX_STACK_SIZE];
+int top;
 
-Polynomial read_poly() {
-    int i;
-    Polynomial p;
-
-    printf("다항식의 최고 차수를 입력하시오: ");
-    scanf("%d", &p.degree);
-    printf("각 항의 계수를 입력하시오 (총 %d개): ", p.degree + 1);
-    for (i = 0; i <= p.degree; i++)
-        scanf("%f", p.coef + i);
-    return p;    
+void error(const char str[]) {
+    printf("%s\n", str);
+    exit(1);
 }
 
-void print_poly(Polynomial p, char str[]){
-    int i;
-    printf("\t%s", str);
-    for(i = 0; i < p.degree; i++)
-        printf("%5.1f x^%d + ", p.coef[i], p.degree - i);
-    printf("%4.1f\n", p.coef[p.degree]);    
+void init_stak() { top = -1; }
+int is_empty() { return top == -1; }
+int is_full() { return top == MAX_STACK_SIZE - 1; }
+int size() { return top + 1; }
+
+void push(Element e) {
+    if (is_full == 1) error("스택 포화 에러");
+    data[++top] = e;
 }
 
-Polynomial add_poly(Polynomial a, Polynomial b){
-    int i;
-    Polynomial p;
-    if (a.degree > b.degree) {
-        p = a;
-        for(i = 0; i <= b.degree; i++)
-            p.coef[i + (p.degree - b.degree)] += b.coef[i];
+Element pop() {
+    if (is_empty == 1) error("스택 공백 에러");
+    return data[top--];
+}
+
+Element peek() {
+    if (is_empty == 1) error("스택 공백 에러");
+    return data[top];
+}
+
+int main()
+{
+    init_stak();
+    char str[100];
+    int count = 0;
+    char tmp[100];
+    printf("문자열을 입력해보세요 : ");
+    scanf("%s", str);
+
+    for (int i = 0; i < sizeof(str) / sizeof(char); i++) {
+        if (str[i] == '\0')
+            break;
+        else 
+            count++;
     }
-    else {
-        p = b;
-        for(i = 0; i <= a.degree; i++)
-            p.coef[i + (p.degree - a.degree)] += a.coef[i];
-    }
-    return p;
-}
 
-double Cal_poly(Polynomial p, double x) {
-    int i;
-    double result = 0.0;
-    double x_power = 1.0; // x^0
-    for (i = 0; i <= p.degree; i++) {
-        result += p.coef[i] * x_power;
-        x_power *= x;
+    for (int i = 0; i < count; i++) {
+        push(str[i]);
     }
-    return result;
-}
 
-void main() {
-    Polynomial a, b, c;
-    double x, result;
-    
-    a = read_poly();
-    b = read_poly();
-    c = add_poly(a, b);
-    
-    printf("계산할 x 값을 입력하시오: ");
-    scanf("%lf", &x);
-    
-    result = Cal_poly(a, x);
-    printf("A = %.2f\n", result);
-    
-    result = Cal_poly(b, x);
-    printf("B = %.2f\n", result);
-    
-    result = Cal_poly(c, x);
-    printf("A+B = %.2f\n", result);
+    for (int i = 0; i < count; i++) {
+        tmp[i] = pop();
+    }
+
+    for (int i = 0; i < count; i++) {
+        if (str[i] != tmp[i]) {
+            printf("회문이 아닙니다.");
+            exit(1);
+        }
+    }
+    printf("회문입니다.");
+    return 0;
 }
